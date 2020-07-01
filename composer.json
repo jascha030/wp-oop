@@ -1,0 +1,16 @@
+{
+  "name": "jascha030/wordpress-subscriptions-di",
+  "description": "WP Plugin api on steroids",
+  "license": "MIT",
+  "authors": [
+    {
+      "name": "Jascha van Aalst",
+      "email": "contact@jaschavanaalst.nl"
+    }
+  ],
+  "require": {},
+  "require-dev": {
+    "friendsofphp/php-cs-fixer": "3.0.x-dev",
+    "squizlabs/php_codesniffer": "4.0.x-dev"
+  }
+}
