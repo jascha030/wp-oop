@@ -4,7 +4,7 @@ namespace Jascha030\WP\OOPOR\Container;
 
 use Psr\Container\ContainerInterface;
 
-class Container implements ContainerInterface
+class Container extends \Pimple\Container implements ContainerInterface
 {
     private $services = [];
 
