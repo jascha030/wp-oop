@@ -2,6 +2,7 @@
 
 namespace Jascha030\WP\OOPOR\Exception;
 
+use Exception;
 use Psr\Container\ContainerExceptionInterface;
 
 /**
@@ -12,7 +13,7 @@ use Psr\Container\ContainerExceptionInterface;
  * @package Jascha030\WP\OOPOR\Exception
  * @author Jascha van Aalst <contact@jaschavanaalst.nl>
  */
-class InvalidClassLiteralException extends \Exception implements ContainerExceptionInterface
+class InvalidClassLiteralException extends Exception implements ContainerExceptionInterface
 {
     private const MESSAGE_TEMPLATE = '%s does not implement %s.';
 
