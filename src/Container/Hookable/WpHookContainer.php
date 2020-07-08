@@ -5,7 +5,7 @@ declare(strict_types=1);
 namespace Jascha030\WP\OOPOR\Container\Hookable;
 
 use Jascha030\WP\OOPOR\Container\Psr11\Psr11Container;
-use Jascha030\WP\OOPOR\Container\Psr11\WpPluginAdiContainerInterface;
+use Jascha030\WP\OOPOR\Container\Psr11\WpPluginApiContainerInterface;
 use Jascha030\WP\OOPOR\Exception\InvalidClassLiteralArgumentException;
 use Jascha030\WP\OOPOR\Service\Hook\HookableServiceInterface;
 
@@ -18,7 +18,7 @@ use function add_filter;
  * @package Jascha030\WP\OOPOR\Container\Hookable
  * @author Jascha van Aalst <contact@jaschavanaalst.nl>
  */
-final class WpHookContainer extends Psr11Container implements WpPluginAdiContainerInterface
+final class WpHookContainer extends Psr11Container implements WpPluginApiContainerInterface
 {
     private const KEYS = ['actions', 'filters'];
 
