@@ -94,8 +94,8 @@ final class WpHookContainer extends Psr11Container implements WpPluginApiContain
     private function sanitizeAndAdd(string $service, string $tag, $arguments, string $context = null): void
     {
         $method            = is_array($arguments) ? $arguments[0] : $arguments;
-        $priority          = (is_array($arguments)) ? $arguments[1] ?? 10 : 10;
-        $acceptedArguments = (is_array($arguments)) ? $arguments[2] ?? 1 : 1;
+        $priority          = is_array($arguments) ? $arguments[1] ?? 10 : 10;
+        $acceptedArguments = is_array($arguments) ? $arguments[2] ?? 1 : 1;
         $context           = $context ?? 'filters';
 
         $this->addFilter($tag, $service, $method, $priority, $acceptedArguments, $context);
