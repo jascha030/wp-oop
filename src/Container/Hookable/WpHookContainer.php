@@ -53,10 +53,10 @@ final class WpHookContainer extends Psr11Container implements WpPluginApiContain
                     // Checks if single or multiple class methods are added to hook
                     if (is_array($parameters) && is_array($parameters[0])) {
                         foreach ($parameters as $params) {
-                            $this->sanitizeAndAdd($tag, $serviceClass, $params, $key);
+                            $this->sanitizeAndAdd($serviceClass, $tag, $params, $key);
                         }
                     } else {
-                        $this->sanitizeAndAdd($tag, $serviceClass, $parameters, $key);
+                        $this->sanitizeAndAdd($serviceClass, $tag, $parameters, $key);
                     }
                 }
             }
@@ -72,8 +72,7 @@ final class WpHookContainer extends Psr11Container implements WpPluginApiContain
         string $context
     ): void {
         $call = function (...$args) use ($service, $method) {
-            $instance = $this->get($service);
-            $instance->{$method}(...$args);
+            ($this->get($service))->{$method}(...$args);
         };
 
         if ($context === 'actions') {
