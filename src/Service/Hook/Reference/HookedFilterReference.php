@@ -7,7 +7,7 @@ namespace Jascha030\WP\OOPOR\Service\Hook\Reference;
 use Closure;
 use Exception;
 use InvalidArgumentException;
-use Jascha030\WP\OOPOR\Container\Psr11\WpPluginApiContainerInterface;
+use Jascha030\WP\OOPOR\Container\Hookable\WpHookContainer;
 use Symfony\Component\Uid\Uuid;
 
 use function add_action;
@@ -15,12 +15,10 @@ use function add_filter;
 use function do_action;
 use function do_filter;
 use function remove_action;
+use function remove_filter;
 
 class HookedFilterReference
 {
-    private const ACTION = 'action';
-    private const FILTER = 'filter';
-
     private Uuid $id;
 
     private string $tag;
@@ -45,10 +43,6 @@ class HookedFilterReference
         $this->acceptedArguments = $acceptedArguments;
     }
 
-    public static function addFilter(WpPluginApiContainerInterface $container)
-    {
-    }
-
     final public function getId(): string
     {
         return $this->id->toRfc4122();
@@ -69,11 +63,11 @@ class HookedFilterReference
         $this->closure = $closure;
         $this->setContext($context);
 
-        if ($context === self::FILTER) {
+        if ($context === WpHookContainer::FILTER) {
             add_filter($this->tag, $this->closure, $this->priority, $this->acceptedArguments);
         }
 
-        if ($context === self::ACTION) {
+        if ($context === WpHookContainer::ACTION) {
             add_action($this->tag, $this->closure, $this->priority, $this->acceptedArguments);
         }
 
@@ -84,11 +78,11 @@ class HookedFilterReference
 
     final public function remove(): void
     {
-        if ($this->context === self::ACTION) {
-            remove_action($this->tag, $this->closure, $this->priority, $this->acceptedArguments);
+        if ($this->context === WpHookContainer::FILTER) {
+            remove_filter($this->tag, $this->closure, $this->priority, $this->acceptedArguments);
         }
 
-        if ($this->context === self::FILTER) {
+        if ($this->context === WpHookContainer::ACTION) {
             remove_action($this->tag, $this->closure, $this->priority, $this->acceptedArguments);
         }
     }
@@ -99,18 +93,18 @@ class HookedFilterReference
             throw new Exception('Request to test method before being hooked.');
         }
 
-        if ($this->context === self::ACTION) {
-            do_action($this->tag);
+        if ($this->context === WpHookContainer::FILTER) {
+            do_filter($this->tag);
         }
 
-        if ($this->context === self::FILTER) {
-            do_filter($this->tag);
+        if ($this->context === WpHookContainer::ACTION) {
+            do_action($this->tag);
         }
     }
 
     private function setContext(string $context): void
     {
-        if ($context !== self::ACTION && $context !== self::FILTER) {
+        if (! in_array($context, WpHookContainer::HOOK_TYPES)) {
             throw new InvalidArgumentException(
                 "context can be either: 'action' or 'filter', string: '{$context}' was provided."
             );
