@@ -6,7 +6,7 @@ use Jascha030\WP\OOPOR\Container\Psr11\WpPluginApiContainerInterface;
 use Jascha030\WP\OOPOR\Exception\InvalidClassLiteralArgumentException;
 use Jascha030\WP\OOPOR\Service\Hook\HookableServiceInterface;
 
-final class FilterManager
+final class FilterManagerService
 {
     public const ACTION = 'actions';
     public const FILTER = 'filters';

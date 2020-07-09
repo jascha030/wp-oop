@@ -7,7 +7,7 @@ namespace Jascha030\WP\OOPOR\Container\Hookable;
 use Jascha030\WP\OOPOR\Container\Psr11\Psr11Container;
 use Jascha030\WP\OOPOR\Container\Psr11\WpPluginApiContainerInterface;
 use Jascha030\WP\OOPOR\Service\Hook\HookableServiceInterface;
-use Jascha030\WP\OOPOR\Service\Hook\Reference\FilterManager;
+use Jascha030\WP\OOPOR\Service\Hook\Reference\FilterManagerService;
 
 use function add_action;
 use function add_filter;
@@ -24,7 +24,7 @@ final class WpHookContainer extends Psr11Container implements WpPluginApiContain
     {
         parent::__construct();
 
-        $this->set(FilterManager::class, fn ($container) => new FilterManager($container));
+        $this->set(FilterManagerService::class, fn ($container) => new FilterManagerService($container));
     }
 
     /**
@@ -38,6 +38,6 @@ final class WpHookContainer extends Psr11Container implements WpPluginApiContain
      */
     public function registerHookableService(string $serviceClass, HookableServiceInterface $object = null): void
     {
-        $this->get(FilterManager::class)->registerHookableService($serviceClass, $object);
+        $this->get(FilterManagerService::class)->registerHookableService($serviceClass, $object);
     }
 }
