@@ -16,7 +16,7 @@ use function do_action;
 use function do_filter;
 use function remove_action;
 
-class HookedMethodReference
+class HookedFilterReference
 {
     private const ACTION = 'action';
     private const FILTER = 'filter';

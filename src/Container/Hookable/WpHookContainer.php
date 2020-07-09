@@ -8,6 +8,7 @@ use Jascha030\WP\OOPOR\Container\Psr11\Psr11Container;
 use Jascha030\WP\OOPOR\Container\Psr11\WpPluginApiContainerInterface;
 use Jascha030\WP\OOPOR\Exception\InvalidClassLiteralArgumentException;
 use Jascha030\WP\OOPOR\Service\Hook\HookableServiceInterface;
+use Jascha030\WP\OOPOR\Service\Hook\Reference\HookedFilterReference;
 
 use function add_action;
 use function add_filter;
@@ -20,7 +21,12 @@ use function add_filter;
  */
 final class WpHookContainer extends Psr11Container implements WpPluginApiContainerInterface
 {
-    private const KEYS = ['actions', 'filters'];
+    public const ACTION = 'actions';
+    public const FILTER = 'filters';
+
+    public const HOOK_TYPES = [self::ACTION, self::FILTER];
+
+    private bool $keepReference = false;
 
     /**
      * Registers a service that provides methods for Wordpress hooks.
@@ -44,9 +50,15 @@ final class WpHookContainer extends Psr11Container implements WpPluginApiContain
         $this->addAll($serviceClass);
     }
 
+    public function trackFilters(): void
+    {
+        $this->keepReference = true;
+        $this->filters       = [];
+    }
+
     private function addAll(string $serviceClass): void
     {
-        foreach (self::KEYS as $key) {
+        foreach (self::HOOK_TYPES as $key) {
             // Iterates hook types and checks service for hookable methods
             if (property_exists($serviceClass, $key)) {
                 foreach ($serviceClass::${$key} as $tag => $parameters) {
@@ -71,17 +83,35 @@ final class WpHookContainer extends Psr11Container implements WpPluginApiContain
         int $acceptedArguments,
         string $context
     ): void {
-        $call = function (...$args) use ($service, $method) {
+        $closure = function (...$args) use ($service, $method) {
             ($this->get($service))->{$method}(...$args);
         };
 
         if ($context === 'actions') {
-            add_action($tag, $call, $priority, $acceptedArguments);
+            add_action($tag, $closure, $priority, $acceptedArguments);
         }
 
         if ($context === 'filters') {
-            add_filter($tag, $call, $priority, $acceptedArguments);
+            add_filter($tag, $closure, $priority, $acceptedArguments);
         }
+    }
+
+    private function addFilterAndReference(
+        string $tag,
+        string $service,
+        string $method,
+        int $priority,
+        int $acceptedArguments,
+        string $context
+    ): void {
+        $filterReference = new HookedFilterReference($tag, $priority, $acceptedArguments);
+        $referenceId     = $filterReference->hook(
+            function (...$args) use ($service, $method, $filterReference) {
+                ($this->get($service))->{$method}(...$args);
+                $filterReference->call();
+            },
+            $context
+        );
     }
 
     /**
@@ -95,8 +125,12 @@ final class WpHookContainer extends Psr11Container implements WpPluginApiContain
         $method            = is_array($arguments) ? $arguments[0] : $arguments;
         $priority          = is_array($arguments) ? $arguments[1] ?? 10 : 10;
         $acceptedArguments = is_array($arguments) ? $arguments[2] ?? 1 : 1;
-        $context           = $context ?? 'filters';
+        $context           = $context ?? self::HOOK_TYPES[self::FILTER];
 
-        $this->addFilter($tag, $service, $method, $priority, $acceptedArguments, $context);
+        if ($this->keepReference) {
+            $this->addFilterAndReference($tag, $service, $method, $priority, $acceptedArguments, $context);
+        } else {
+            $this->addFilter($tag, $service, $method, $priority, $acceptedArguments, $context);
+        }
     }
 }

@@ -13,4 +13,6 @@ use Jascha030\WP\OOPOR\Service\Hook\HookableServiceInterface;
 interface WpPluginApiContainerInterface
 {
     public function registerHookableService(string $class, HookableServiceInterface $object): void;
+
+    public function trackFilters(): void;
 }
