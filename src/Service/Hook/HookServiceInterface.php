@@ -3,12 +3,12 @@
 namespace Jascha030\WP\OOPOR\Service\Hook;
 
 /**
- * Interface HookableServiceInterface
+ * Interface HookServiceInterface
  *
  * @package Jascha030\WP\OOPOR\Service\Hook
  * @author Jascha van Aalst <contact@jaschavanaalst.nl>
  */
-interface HookableServiceInterface
+interface HookServiceInterface
 {
     public function __construct();
 }

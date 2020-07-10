@@ -7,7 +7,7 @@ namespace Jascha030\WP\OOPOR\Service\Hook\Reference;
 use Closure;
 use Exception;
 use InvalidArgumentException;
-use Jascha030\WP\OOPOR\Container\Hookable\WpHookContainer;
+use Jascha030\WP\OOPOR\Service\Hook\FilterManagerService;
 use Symfony\Component\Uid\Uuid;
 
 use function add_action;
@@ -17,7 +17,7 @@ use function do_filter;
 use function remove_action;
 use function remove_filter;
 
-class HookedFilterReference
+class HookedFilter
 {
     private Uuid $id;
 
@@ -58,16 +58,20 @@ class HookedFilterReference
         return $this->called;
     }
 
+    final public function getType(): string
+    {
+    }
+
     final public function hook(Closure $closure, string $context): string
     {
         $this->closure = $closure;
         $this->setContext($context);
 
-        if ($context === WpHookContainer::FILTER) {
+        if ($context === FilterManagerService::FILTER) {
             add_filter($this->tag, $this->closure, $this->priority, $this->acceptedArguments);
         }
 
-        if ($context === WpHookContainer::ACTION) {
+        if ($context === FilterManagerService::ACTION) {
             add_action($this->tag, $this->closure, $this->priority, $this->acceptedArguments);
         }
 
@@ -78,11 +82,11 @@ class HookedFilterReference
 
     final public function remove(): void
     {
-        if ($this->context === WpHookContainer::FILTER) {
+        if ($this->context === FilterManagerService::FILTER) {
             remove_filter($this->tag, $this->closure, $this->priority, $this->acceptedArguments);
         }
 
-        if ($this->context === WpHookContainer::ACTION) {
+        if ($this->context === FilterManagerService::ACTION) {
             remove_action($this->tag, $this->closure, $this->priority, $this->acceptedArguments);
         }
     }
@@ -93,18 +97,18 @@ class HookedFilterReference
             throw new Exception('Request to test method before being hooked.');
         }
 
-        if ($this->context === WpHookContainer::FILTER) {
+        if ($this->context === FilterManagerService::FILTER) {
             do_filter($this->tag);
         }
 
-        if ($this->context === WpHookContainer::ACTION) {
+        if ($this->context === FilterManagerService::ACTION) {
             do_action($this->tag);
         }
     }
 
     private function setContext(string $context): void
     {
-        if (! in_array($context, WpHookContainer::HOOK_TYPES)) {
+        if (! in_array($context, FilterManagerService::HOOK_TYPES)) {
             throw new InvalidArgumentException(
                 "context can be either: 'action' or 'filter', string: '{$context}' was provided."
             );

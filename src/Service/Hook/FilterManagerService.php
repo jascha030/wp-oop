@@ -1,10 +1,10 @@
 <?php
 
-namespace Jascha030\WP\OOPOR\Service\Hook\Reference;
+namespace Jascha030\WP\OOPOR\Service\Hook;
 
-use Jascha030\WP\OOPOR\Container\Psr11\WpPluginApiContainerInterface;
 use Jascha030\WP\OOPOR\Exception\InvalidClassLiteralArgumentException;
-use Jascha030\WP\OOPOR\Service\Hook\HookableServiceInterface;
+use Jascha030\WP\OOPOR\Service\Hook\Reference\HookedFilter;
+use Psr\Container\ContainerInterface;
 
 final class FilterManagerService
 {
@@ -13,39 +13,51 @@ final class FilterManagerService
 
     public const HOOK_TYPES = [self::ACTION, self::FILTER];
 
-    private WpPluginApiContainerInterface $container;
+    private ContainerInterface $container;
 
-    private bool $keepReference;
+    private bool $keepReference = false;
 
     private array $filters = [];
 
-    public function __construct(WpPluginApiContainerInterface $container)
+    public function __construct(ContainerInterface $container)
     {
         $this->container = $container;
     }
 
-    public function trackFilters(): void
+    /**
+     * Keep track of hooks and how many times they are called.
+     */
+    public function enableFilterStorage(): void
     {
         $this->keepReference = true;
     }
+
+    public function disableFilterStorage(): void
+    {
+        if ($this->keepReference) {
+            $this->keepReference = false;
+            $this->filters       = [];
+        }
+    }
+
 
     /**
      * Registers a service that provides methods for Wordpress hooks.
      * Wraps hookable methods in closures which share one instance of that is only constructed upon first hook call.
      *
      * @param string $serviceClass
-     * @param \Jascha030\WP\OOPOR\Service\Hook\HookableServiceInterface|null $object to add if already constructed
+     * @param \Jascha030\WP\OOPOR\Service\Hook\HookServiceInterface|null $object to add if already constructed
      *
      * @throws \Jascha030\WP\OOPOR\Exception\InvalidClassLiteralArgumentException
      */
-    public function registerHookableService(string $serviceClass, HookableServiceInterface $object = null): void
+    public function registerHookService(string $serviceClass, HookServiceInterface $object = null): void
     {
-        if (! is_subclass_of($serviceClass, HookableServiceInterface::class)) {
-            throw new InvalidClassLiteralArgumentException('class', $serviceClass, HookableServiceInterface::class);
+        if (! is_subclass_of($serviceClass, HookServiceInterface::class)) {
+            throw new InvalidClassLiteralArgumentException('class', $serviceClass, HookServiceInterface::class);
         }
 
-        if (! $this->has($serviceClass)) {
-            $this->set($serviceClass, ! $object ? fn ($container) => new $serviceClass($container) : fn () => $object);
+        if (! $this->container->has($serviceClass)) {
+            $this->container->set($serviceClass, ! $object ? fn () => new $serviceClass() : fn () => $object);
         }
 
         $this->addAll($serviceClass);
@@ -80,7 +92,7 @@ final class FilterManagerService
         int $acceptedArguments,
         string $context
     ): void {
-        $filterReference = new HookedFilterReference($tag, $priority, $acceptedArguments);
+        $filterReference = new HookedFilter($tag, $priority, $acceptedArguments);
         $referenceId     = $filterReference->hook(
             function (...$args) use ($service, $method, $filterReference) {
                 ($this->container->get($service))->{$method}(...$args);
@@ -89,7 +101,7 @@ final class FilterManagerService
             $context
         );
 
-        $this->filters[$referenceId] = $filterReference;
+        $this->filters[$service][$referenceId] = $filterReference;
     }
 
     /**
