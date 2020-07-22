@@ -3,6 +3,7 @@
 namespace Jascha030\WP\OOPOR\Service\Hook;
 
 use Jascha030\WP\OOPOR\Exception\InvalidClassLiteralArgumentException;
+use Jascha030\WP\OOPOR\Service\Hook\Reference\FilterStorage;
 use Jascha030\WP\OOPOR\Service\Hook\Reference\HookedFilter;
 use Psr\Container\ContainerInterface;
 
@@ -17,7 +18,7 @@ final class FilterManagerService
 
     private bool $keepReference = false;
 
-    private array $filters = [];
+    private FilterStorage $filters;
 
     public function __construct(ContainerInterface $container)
     {
@@ -36,7 +37,7 @@ final class FilterManagerService
     {
         if ($this->keepReference) {
             $this->keepReference = false;
-            $this->filters       = [];
+            $this->filters       = new FilterStorage();
         }
     }
 
@@ -57,7 +58,7 @@ final class FilterManagerService
         }
 
         if (! $this->container->has($serviceClass)) {
-            $this->container->set($serviceClass, ! $object ? fn () => new $serviceClass() : fn () => $object);
+            $this->container->set($serviceClass, ! $object ? fn() => new $serviceClass() : fn() => $object);
         }
 
         $this->addAll($serviceClass);
@@ -93,7 +94,7 @@ final class FilterManagerService
         string $context
     ): void {
         $filterReference = new HookedFilter($tag, $priority, $acceptedArguments);
-        $referenceId     = $filterReference->hook(
+        $filterReference->hook(
             function (...$args) use ($service, $method, $filterReference) {
                 ($this->container->get($service))->{$method}(...$args);
                 $filterReference->call();
@@ -101,7 +102,7 @@ final class FilterManagerService
             $context
         );
 
-        $this->filters[$service][$referenceId] = $filterReference;
+        $this->filters->$tag = $filterReference;
     }
 
     /**
@@ -112,10 +113,13 @@ final class FilterManagerService
      */
     private function sanitizeAndAdd(string $service, string $tag, $arguments, string $context = null): void
     {
+        // Check if hook has single or multiple methods.
         $method            = is_array($arguments) ? $arguments[0] : $arguments;
         $priority          = is_array($arguments) ? $arguments[1] ?? 10 : 10;
         $acceptedArguments = is_array($arguments) ? $arguments[2] ?? 1 : 1;
-        $context           = $context ?? self::HOOK_TYPES[self::FILTER];
+
+        // Filter or action.
+        $context = $context ?? self::HOOK_TYPES[self::FILTER];
 
         if ($this->keepReference) {
             $this->addFilterAndReference($tag, $service, $method, $priority, $acceptedArguments, $context);
@@ -127,10 +131,10 @@ final class FilterManagerService
     private function addAll(string $serviceClass): void
     {
         foreach (self::HOOK_TYPES as $key) {
-            // Iterates hook types and checks service for hookable methods
+            // Iterates hook types and checks service for hookable methods.
             if (property_exists($serviceClass, $key)) {
                 foreach ($serviceClass::${$key} as $tag => $parameters) {
-                    // Checks if single or multiple class methods are added to hook
+                    // Checks if single or multiple class methods are added to hook.
                     if (is_array($parameters) && is_array($parameters[0])) {
                         foreach ($parameters as $params) {
                             $this->sanitizeAndAdd($serviceClass, $tag, $params, $key);

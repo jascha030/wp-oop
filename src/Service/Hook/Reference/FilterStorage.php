@@ -2,34 +2,30 @@
 
 namespace Jascha030\WP\OOPOR\Service\Hook\Reference;
 
-final class FilterStorage implements \ArrayAccess
+final class FilterStorage
 {
     private array $filters = [];
 
-    private array $actions = [];
-
-    public function offsetExists($offset): bool
+    public function __get(string $hook): array
     {
-        return array_key_exists($offset, $this->filters) || array_key_exists($offset, $this->actions);
+        return $this->filters[$hook];
     }
 
-    public function offsetGet($offset)
+    public function __set(string $hook, HookedFilter $value): void
     {
-        return $this->filters[$offset];
+        $this->store($hook, $value);
     }
 
-    public function offsetSet($offset, $value): void
+    public function __isset(string $hook): bool
     {
-        $this->store($offset, $value);
+        return array_key_exists($hook, $this->filters);
     }
 
-    public function offsetUnset($offset): void
+    private function store(string $hook, HookedFilter $filter): void
     {
-        unset($this->filters[$offset]);
-    }
-
-    private function store(string $id, HookedFilter $filter): void
-    {
-        //        $filter->
+        if (! isset($this->filters[$hook]) || ! is_array($this->filters[$hook])) {
+            $this->filters[$hook] = [];
+        }
+        $this->filters[$hook][$filter->getId()] = $filter;
     }
 }

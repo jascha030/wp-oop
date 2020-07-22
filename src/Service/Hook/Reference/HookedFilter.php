@@ -60,9 +60,10 @@ class HookedFilter
 
     final public function getType(): string
     {
+        return $this->context;
     }
 
-    final public function hook(Closure $closure, string $context): string
+    final public function hook(Closure $closure, string $context): void
     {
         $this->closure = $closure;
         $this->setContext($context);
@@ -76,8 +77,6 @@ class HookedFilter
         }
 
         $this->hooked = true;
-
-        return $this->getId();
     }
 
     final public function remove(): void
