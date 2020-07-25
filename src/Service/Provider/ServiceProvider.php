@@ -7,26 +7,10 @@ use Pimple\ServiceProviderInterface;
 
 class ServiceProvider implements ServiceProviderInterface
 {
-    public function register(Container $pimple)
-    {
-        // TODO: Implement register() method.
-    }
+    private array $services = [];
 
-    /**
-     * @param \Pimple\Container $pimple
-     * @param string $serviceName
-     * @param mixed|null $service
-     */
-    private function compile(Container $pimple, string $serviceName, $service = null): void
+    public function register(Container $pimple): void
     {
-        if (! $service) {
-            $pimple[$serviceName] = function () use ($serviceName) {
-                return new $serviceName();
-            };
-        }
-
-        if ($service instanceof \Closure || is_callable($service)) {
-            $pimple[$serviceName] = $service;
-        }
+        $pimple->register($this, $this->services);
     }
 }

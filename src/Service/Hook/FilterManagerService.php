@@ -2,25 +2,25 @@
 
 namespace Jascha030\WP\OOPOR\Service\Hook;
 
+use Jascha030\WP\OOPOR\Container\Psr11\ContainerObjectInterface;
 use Jascha030\WP\OOPOR\Exception\InvalidClassLiteralArgumentException;
 use Jascha030\WP\OOPOR\Service\Hook\Reference\FilterStorage;
 use Jascha030\WP\OOPOR\Service\Hook\Reference\HookedFilter;
-use Psr\Container\ContainerInterface;
 
 final class FilterManagerService
 {
-    public const ACTION = 'actions';
-    public const FILTER = 'filters';
+    public const ACTION = 2;
+    public const FILTER = 1;
 
-    public const HOOK_TYPES = [self::ACTION, self::FILTER];
+    public const HOOK_TYPES = [self::ACTION => 'actions', self::FILTER => 'filters'];
 
-    private ContainerInterface $container;
+    private ContainerObjectInterface $container;
 
     private bool $keepReference = false;
 
     private FilterStorage $filters;
 
-    public function __construct(ContainerInterface $container)
+    public function __construct(ContainerObjectInterface $container)
     {
         $this->container = $container;
     }
@@ -58,7 +58,7 @@ final class FilterManagerService
         }
 
         if (! $this->container->has($serviceClass)) {
-            $this->container->set($serviceClass, ! $object ? fn() => new $serviceClass() : fn() => $object);
+            $this->container->set($serviceClass, ! $object ? fn () => new $serviceClass() : fn () => $object);
         }
 
         $this->addAll($serviceClass);
@@ -70,17 +70,17 @@ final class FilterManagerService
         string $method,
         int $priority,
         int $acceptedArguments,
-        string $context
+        int $context
     ): void {
         $closure = function (...$args) use ($service, $method) {
             ($this->container->get($service))->{$method}(...$args);
         };
 
-        if ($context === 'actions') {
+        if ($context === self::ACTION) {
             add_action($tag, $closure, $priority, $acceptedArguments);
         }
 
-        if ($context === 'filters') {
+        if ($context === self::FILTER) {
             add_filter($tag, $closure, $priority, $acceptedArguments);
         }
     }
@@ -91,7 +91,7 @@ final class FilterManagerService
         string $method,
         int $priority,
         int $acceptedArguments,
-        string $context
+        int $context
     ): void {
         $filterReference = new HookedFilter($tag, $priority, $acceptedArguments);
         $filterReference->hook(
@@ -109,9 +109,9 @@ final class FilterManagerService
      * @param string $service
      * @param string $tag
      * @param string|array $arguments
-     * @param string|null $context
+     * @param int $context
      */
-    private function sanitizeAndAdd(string $service, string $tag, $arguments, string $context = null): void
+    private function sanitizeAndAdd(string $service, string $tag, $arguments, int $context = null): void
     {
         // Check if hook has single or multiple methods.
         $method            = is_array($arguments) ? $arguments[0] : $arguments;
@@ -119,7 +119,7 @@ final class FilterManagerService
         $acceptedArguments = is_array($arguments) ? $arguments[2] ?? 1 : 1;
 
         // Filter or action.
-        $context = $context ?? self::HOOK_TYPES[self::FILTER];
+        $context = $context ?? 1;
 
         if ($this->keepReference) {
             $this->addFilterAndReference($tag, $service, $method, $priority, $acceptedArguments, $context);
@@ -130,10 +130,10 @@ final class FilterManagerService
 
     private function addAll(string $serviceClass): void
     {
-        foreach (self::HOOK_TYPES as $key) {
+        foreach (self::HOOK_TYPES as $key => $val) {
             // Iterates hook types and checks service for hookable methods.
-            if (property_exists($serviceClass, $key)) {
-                foreach ($serviceClass::${$key} as $tag => $parameters) {
+            if (property_exists($serviceClass, $val)) {
+                foreach ($serviceClass::${$val} as $tag => $parameters) {
                     // Checks if single or multiple class methods are added to hook.
                     if (is_array($parameters) && is_array($parameters[0])) {
                         foreach ($parameters as $params) {

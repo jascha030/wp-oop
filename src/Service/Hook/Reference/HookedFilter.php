@@ -29,7 +29,7 @@ class HookedFilter
 
     private Closure $closure;
 
-    private string $context;
+    private int $type;
 
     private int $called;
 
@@ -58,21 +58,21 @@ class HookedFilter
         return $this->called;
     }
 
-    final public function getType(): string
+    final public function getType(): int
     {
-        return $this->context;
+        return $this->type;
     }
 
-    final public function hook(Closure $closure, string $context): void
+    final public function hook(Closure $closure, int $type): void
     {
         $this->closure = $closure;
-        $this->setContext($context);
+        $this->setContext($type);
 
-        if ($context === FilterManagerService::FILTER) {
+        if ($type === FilterManagerService::FILTER) {
             add_filter($this->tag, $this->closure, $this->priority, $this->acceptedArguments);
         }
 
-        if ($context === FilterManagerService::ACTION) {
+        if ($type === FilterManagerService::ACTION) {
             add_action($this->tag, $this->closure, $this->priority, $this->acceptedArguments);
         }
 
@@ -81,11 +81,11 @@ class HookedFilter
 
     final public function remove(): void
     {
-        if ($this->context === FilterManagerService::FILTER) {
+        if ($this->type === FilterManagerService::FILTER) {
             remove_filter($this->tag, $this->closure, $this->priority, $this->acceptedArguments);
         }
 
-        if ($this->context === FilterManagerService::ACTION) {
+        if ($this->type === FilterManagerService::ACTION) {
             remove_action($this->tag, $this->closure, $this->priority, $this->acceptedArguments);
         }
     }
@@ -96,23 +96,23 @@ class HookedFilter
             throw new Exception('Request to test method before being hooked.');
         }
 
-        if ($this->context === FilterManagerService::FILTER) {
+        if ($this->type === FilterManagerService::FILTER) {
             do_filter($this->tag);
         }
 
-        if ($this->context === FilterManagerService::ACTION) {
+        if ($this->type === FilterManagerService::ACTION) {
             do_action($this->tag);
         }
     }
 
-    private function setContext(string $context): void
+    private function setContext(int $type): void
     {
-        if (! in_array($context, FilterManagerService::HOOK_TYPES)) {
+        if (! array_key_exists($type, FilterManagerService::HOOK_TYPES)) {
             throw new InvalidArgumentException(
-                "context can be either: 'action' or 'filter', string: '{$context}' was provided."
+                "context can be either: 'action' or 'filter', string: '{$type}' was provided."
             );
         }
 
-        $this->context = $context;
+        $this->type = $type;
     }
 }

@@ -37,7 +37,7 @@ class Psr11Container implements ContainerInterface, ContainerObjectInterface
     /**
      * {@inheritDoc}
      */
-    final public function has($id)
+    final public function has($id): bool
     {
         return isset($this->pimple[$id]);
     }
