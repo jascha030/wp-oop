@@ -23,6 +23,7 @@ class Psr11Container implements ContainerInterface, ContainerObjectInterface
     public function __construct(PimpleContainer $pimple = null)
     {
         $this->pimple = $pimple ?? new PimpleContainer();
+        $this->set(static::class, fn () => $this);
     }
 
     /**
@@ -36,7 +37,7 @@ class Psr11Container implements ContainerInterface, ContainerObjectInterface
     /**
      * {@inheritDoc}
      */
-    final public function has($id)
+    final public function has($id): bool
     {
         return isset($this->pimple[$id]);
     }

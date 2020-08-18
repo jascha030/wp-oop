@@ -1,5 +1,5 @@
 {
-  "name": "jascha030/wp-oopor",
+  "name": "jascha030/wp-oop",
   "description": "WP OOP On Roids (working title)",
   "license": "MIT",
   "authors": [
@@ -10,7 +10,8 @@
   ],
   "require": {
     "psr/container": "^1.0",
-    "pimple/pimple": "^3.3"
+    "pimple/pimple": "^3.3",
+    "symfony/uid": "^5.1"
   },
   "require-dev": {
     "friendsofphp/php-cs-fixer": "3.0.x-dev",

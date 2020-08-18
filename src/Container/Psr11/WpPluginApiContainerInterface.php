@@ -2,7 +2,8 @@
 
 namespace Jascha030\WP\OOPOR\Container\Psr11;
 
-use Jascha030\WP\OOPOR\Service\Hook\HookableServiceInterface;
+use Jascha030\WP\OOPOR\Service\Hook\HookServiceInterface;
+use Psr\Container\ContainerInterface;
 
 /**
  * Interface WpPluginApiContainerInterface
@@ -10,7 +11,7 @@ use Jascha030\WP\OOPOR\Service\Hook\HookableServiceInterface;
  * @package Jascha030\WP\OOPOR\Container\Psr11
  * @author Jascha van Aalst <contact@jaschavanaalst.nl>
  */
-interface WpPluginApiContainerInterface
+interface WpPluginApiContainerInterface extends ContainerInterface
 {
-    public function registerHookableService(string $class, HookableServiceInterface $object): void;
+    public function registerHookService(string $class, HookServiceInterface $object): void;
 }
