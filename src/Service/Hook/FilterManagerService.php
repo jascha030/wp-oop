@@ -58,7 +58,7 @@ final class FilterManagerService
         }
 
         if (! $this->container->has($serviceClass)) {
-            $this->container->set($serviceClass, ! $object ? fn () => new $serviceClass() : fn () => $object);
+            $this->container->set($serviceClass, ! $object ? fn() => new $serviceClass() : fn() => $object);
         }
 
         $this->addAll($serviceClass);
@@ -109,7 +109,7 @@ final class FilterManagerService
      * @param string $service
      * @param string $tag
      * @param string|array $arguments
-     * @param int $context
+     * @param int|null $context
      */
     private function sanitizeAndAdd(string $service, string $tag, $arguments, int $context = null): void
     {
