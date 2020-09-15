@@ -47,9 +47,9 @@ final class FilterManagerService
      * Wraps hookable methods in closures which share one instance of that is only constructed upon first hook call.
      *
      * @param string $serviceClass
-     * @param \Jascha030\WP\OOPOR\Service\Hook\HookServiceInterface|null $object to add if already constructed
+     * @param  HookServiceInterface|null $object to add if already constructed
      *
-     * @throws \Jascha030\WP\OOPOR\Exception\InvalidClassLiteralArgumentException
+     * @throws InvalidClassLiteralArgumentException
      */
     public function registerHookService(string $serviceClass, HookServiceInterface $object = null): void
     {
@@ -58,7 +58,7 @@ final class FilterManagerService
         }
 
         if (! $this->container->has($serviceClass)) {
-            $this->container->set($serviceClass, ! $object ? fn() => new $serviceClass() : fn() => $object);
+            $this->container->set($serviceClass, ! $object ? fn () => new $serviceClass() : fn () => $object);
         }
 
         $this->addAll($serviceClass);
