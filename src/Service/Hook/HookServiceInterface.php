@@ -10,5 +10,4 @@ namespace Jascha030\WP\OOPOR\Service\Hook;
  */
 interface HookServiceInterface
 {
-    public function __construct();
 }
