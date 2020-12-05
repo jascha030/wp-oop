@@ -1,23 +1,26 @@
 <?php
 
-namespace Jascha030\WP\OOPOR\Service\Hook;
+namespace Jascha030\WP\OOPOR\Service\Filter\Manager;
 
+use Closure;
 use Jascha030\WP\OOPOR\Container\Psr11\ContainerObjectInterface;
 use Jascha030\WP\OOPOR\Exception\InvalidClassLiteralArgumentException;
-use Jascha030\WP\OOPOR\Service\Hook\Reference\FilterStorage;
-use Jascha030\WP\OOPOR\Service\Hook\Reference\HookedFilter;
+use Jascha030\WP\OOPOR\Service\Filter\HookServiceInterface;
+use Jascha030\WP\OOPOR\Service\Filter\Reference\FilterStorage;
+use Jascha030\WP\OOPOR\Service\Filter\Reference\HookedFilter;
 
-final class FilterManagerService
+class FilterService
 {
     public const ACTION = 2;
     public const FILTER = 1;
-
-    public const HOOK_TYPES = [self::ACTION => 'actions', self::FILTER => 'filters'];
+    private const HOOK_TYPES = [
+        self::ACTION => 'actions',
+        self::FILTER => 'filters'
+    ];
 
     private ContainerObjectInterface $container;
 
-    private bool $keepReference = false;
-
+    // todo: filter storage to trait or child
     private FilterStorage $filters;
 
     public function __construct(ContainerObjectInterface $container)
@@ -26,65 +29,65 @@ final class FilterManagerService
     }
 
     /**
-     * Keep track of hooks and how many times they are called.
-     */
-    public function enableFilterStorage(): void
-    {
-        $this->keepReference = true;
-    }
-
-    public function disableFilterStorage(): void
-    {
-        if ($this->keepReference) {
-            $this->keepReference = false;
-            $this->filters       = new FilterStorage();
-        }
-    }
-
-
-    /**
      * Registers a service that provides methods for Wordpress hooks.
      * Wraps hookable methods in closures which share one instance of that is only constructed upon first hook call.
      *
-     * @param string $serviceClass
-     * @param  HookServiceInterface|null $object to add if already constructed
+     * @param  string  $serviceClass
+     * @param  HookServiceInterface|null  $object  to add if already constructed
      *
      * @throws InvalidClassLiteralArgumentException
      */
-    public function registerHookService(string $serviceClass, HookServiceInterface $object = null): void
+    final public function registerHookService(string $serviceClass, HookServiceInterface $object = null): void
     {
         if (! is_subclass_of($serviceClass, HookServiceInterface::class)) {
             throw new InvalidClassLiteralArgumentException('class', $serviceClass, HookServiceInterface::class);
         }
 
         if (! $this->container->has($serviceClass)) {
-            $this->container->set($serviceClass, ! $object ? fn () => new $serviceClass() : fn () => $object);
+            $this->container->set(
+                $serviceClass,
+                ! $object ? static fn() => new $serviceClass() : static fn() => $object
+            );
         }
 
         $this->addAll($serviceClass);
     }
 
-    private function addFilter(
-        string $tag,
-        string $service,
-        string $method,
-        int $priority,
-        int $acceptedArguments,
-        int $context
-    ): void {
-        $closure = function (...$args) use ($service, $method) {
-            ($this->container->get($service))->{$method}(...$args);
-        };
-
+    private function add(string $tag, Closure $closure, int $prio, int $arguments, int $context): void
+    {
         if ($context === self::ACTION) {
-            add_action($tag, $closure, $priority, $acceptedArguments);
+            add_action($tag, $closure, $prio, $arguments);
         }
 
         if ($context === self::FILTER) {
-            add_filter($tag, $closure, $priority, $acceptedArguments);
+            add_filter($tag, $closure, $prio, $arguments);
         }
     }
 
+    /**
+     * Wraps class and method in a Closure
+     *
+     * @param $service
+     * @param $method
+     * @return Closure
+     */
+    private function wrapClosure(string $service, string $method): Closure
+    {
+        return function (...$args) use ($service, $method) {
+            return $this->container->get($service)->{$method}(...$args);
+        };
+    }
+
+    /**
+     * Todo: Add to Trait or extend class
+     *
+     * @param  string  $tag
+     * @param  string  $service
+     * @param  string  $method
+     * @param  int  $priority
+     * @param  int  $acceptedArguments
+     * @param  int  $context
+     */
     private function addFilterAndReference(
         string $tag,
         string $service,
@@ -94,10 +97,12 @@ final class FilterManagerService
         int $context
     ): void {
         $filterReference = new HookedFilter($tag, $priority, $acceptedArguments);
+
         $filterReference->hook(
             function (...$args) use ($service, $method, $filterReference) {
-                ($this->container->get($service))->{$method}(...$args);
+                $do = $this->container->get($service)->{$method}(...$args);
                 $filterReference->call();
+                return $do;
             },
             $context
         );
@@ -106,10 +111,10 @@ final class FilterManagerService
     }
 
     /**
-     * @param string $service
-     * @param string $tag
-     * @param string|array $arguments
-     * @param int|null $context
+     * @param  string  $service
+     * @param  string  $tag
+     * @param  string|array  $arguments
+     * @param  int|null  $context
      */
     private function sanitizeAndAdd(string $service, string $tag, $arguments, int $context = null): void
     {
@@ -124,10 +129,19 @@ final class FilterManagerService
         if ($this->keepReference) {
             $this->addFilterAndReference($tag, $service, $method, $priority, $acceptedArguments, $context);
         } else {
-            $this->addFilter($tag, $service, $method, $priority, $acceptedArguments, $context);
+            $this->add(
+                $tag,
+                $this->wrapClosure($service, $method),
+                $priority,
+                $acceptedArguments,
+                $context
+            );
         }
     }
 
+    /**
+     * @param  string  $serviceClass
+     */
     private function addAll(string $serviceClass): void
     {
         foreach (self::HOOK_TYPES as $key => $val) {

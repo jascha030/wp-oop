@@ -1,6 +1,6 @@
 <?php
 
-namespace Jascha030\WP\OOPOR\Service\Hook;
+namespace Jascha030\WP\OOPOR\Service\Filter;
 
 /**
  * Interface HookServiceInterface
