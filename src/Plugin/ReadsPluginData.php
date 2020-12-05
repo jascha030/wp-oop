@@ -22,7 +22,7 @@ trait ReadsPluginData
      * Get data from the Plugin header by key
      *
      * @param  string  $key
-     * @return mixed|null
+     * @return null|string
      */
     final public function getPluginData(string $key): ?string
     {

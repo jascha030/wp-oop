@@ -7,7 +7,7 @@ use Jascha030\WP\OOPOR\Exception\InvalidClassLiteralArgumentException;
 
 abstract class AbstractWordpressPlugin
 {
-    private string $file;
+    protected string $file;
 
     private array $pluginData = [];
 
