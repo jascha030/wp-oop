@@ -24,8 +24,6 @@ abstract class AbstractWordpressPlugin
     {
         $this->file = $file;
 
-        $this->fetchPluginData();
-
         $this->container = new WpHookContainer();
 
         foreach ($bindings as $class) {
@@ -35,10 +33,5 @@ abstract class AbstractWordpressPlugin
                 // print notices
             }
         }
-    }
-
-    public function fetchPluginData()
-    {
-        $this->pluginData = get_plugin_data($this->file, false);
     }
 }

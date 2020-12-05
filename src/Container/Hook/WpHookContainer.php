@@ -7,7 +7,7 @@ namespace Jascha030\WP\OOPOR\Container\Hook;
 use Jascha030\WP\OOPOR\Container\Psr11\Psr11Container;
 use Jascha030\WP\OOPOR\Container\Psr11\WpPluginApiContainerInterface;
 use Jascha030\WP\OOPOR\Exception\InvalidClassLiteralArgumentException;
-use Jascha030\WP\OOPOR\Service\Filter\Manager\FilterManagerService;
+use Jascha030\WP\OOPOR\Service\Filter\Manager\FilterService;
 use Jascha030\WP\OOPOR\Service\Filter\HookServiceInterface;
 
 use function add_action;
@@ -25,7 +25,7 @@ final class WpHookContainer extends Psr11Container implements WpPluginApiContain
     {
         parent::__construct();
 
-        $this->set(FilterManagerService::class, fn ($container) => new FilterManagerService($container[static::class]));
+        $this->set(FilterService::class, fn ($container) => new FilterService($container[static::class]));
     }
 
     /**
@@ -38,6 +38,6 @@ final class WpHookContainer extends Psr11Container implements WpPluginApiContain
      */
     public function registerHookService(string $serviceClass, HookServiceInterface $object = null): void
     {
-        $this->get(FilterManagerService::class)->registerHookService($serviceClass, $object);
+        $this->get(FilterService::class)->registerHookService($serviceClass, $object);
     }
 }
