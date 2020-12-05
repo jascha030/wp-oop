@@ -1,18 +1,23 @@
 <?php
 
-namespace Jascha030\WP\OOPOR\Service\Hook;
+namespace Jascha030\WP\OOPOR\Service\Filter\Manager;
 
 use Jascha030\WP\OOPOR\Container\Psr11\ContainerObjectInterface;
 use Jascha030\WP\OOPOR\Exception\InvalidClassLiteralArgumentException;
-use Jascha030\WP\OOPOR\Service\Hook\Reference\FilterStorage;
-use Jascha030\WP\OOPOR\Service\Hook\Reference\HookedFilter;
+use Jascha030\WP\OOPOR\Service\Filter\HookServiceInterface;
+use Jascha030\WP\OOPOR\Service\Filter\Reference\FilterStorage;
+use Jascha030\WP\OOPOR\Service\Filter\Reference\HookedFilter;
 
 final class FilterManagerService
 {
     public const ACTION = 2;
+
     public const FILTER = 1;
 
-    public const HOOK_TYPES = [self::ACTION => 'actions', self::FILTER => 'filters'];
+    public const HOOK_TYPES = [
+        self::ACTION => 'actions',
+        self::FILTER => 'filters'
+    ];
 
     private ContainerObjectInterface $container;
 
@@ -25,14 +30,6 @@ final class FilterManagerService
         $this->container = $container;
     }
 
-    /**
-     * Keep track of hooks and how many times they are called.
-     */
-    public function enableFilterStorage(): void
-    {
-        $this->keepReference = true;
-    }
-
     public function disableFilterStorage(): void
     {
         if ($this->keepReference) {
@@ -41,13 +38,12 @@ final class FilterManagerService
         }
     }
 
-
     /**
      * Registers a service that provides methods for Wordpress hooks.
      * Wraps hookable methods in closures which share one instance of that is only constructed upon first hook call.
      *
-     * @param string $serviceClass
-     * @param  HookServiceInterface|null $object to add if already constructed
+     * @param  string  $serviceClass
+     * @param  HookServiceInterface|null  $object  to add if already constructed
      *
      * @throws InvalidClassLiteralArgumentException
      */
@@ -58,30 +54,23 @@ final class FilterManagerService
         }
 
         if (! $this->container->has($serviceClass)) {
-            $this->container->set($serviceClass, ! $object ? fn () => new $serviceClass() : fn () => $object);
+            $this->container->set($serviceClass, ! $object ? fn() => new $serviceClass() : fn() => $object);
         }
 
         $this->addAll($serviceClass);
     }
 
-    private function addFilter(
-        string $tag,
-        string $service,
-        string $method,
-        int $priority,
-        int $acceptedArguments,
-        int $context
-    ): void {
+    private function addFilter(string $tag, string $service, string $method, int $prio, int $arguments, int $context): void {
         $closure = function (...$args) use ($service, $method) {
             ($this->container->get($service))->{$method}(...$args);
         };
 
         if ($context === self::ACTION) {
-            add_action($tag, $closure, $priority, $acceptedArguments);
+            add_action($tag, $closure, $prio, $arguments);
         }
 
         if ($context === self::FILTER) {
-            add_filter($tag, $closure, $priority, $acceptedArguments);
+            add_filter($tag, $closure, $prio, $arguments);
         }
     }
 
@@ -106,10 +95,10 @@ final class FilterManagerService
     }
 
     /**
-     * @param string $service
-     * @param string $tag
-     * @param string|array $arguments
-     * @param int|null $context
+     * @param  string  $service
+     * @param  string  $tag
+     * @param  string|array  $arguments
+     * @param  int|null  $context
      */
     private function sanitizeAndAdd(string $service, string $tag, $arguments, int $context = null): void
     {

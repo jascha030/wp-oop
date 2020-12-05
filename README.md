@@ -131,7 +131,7 @@ Below is an example of one of these classes.
 
 namespace Jascha030\Test;
 
-use Jascha030\WP\OOPOR\Service\Hook\HookServiceInterface;
+use Jascha030\WP\OOPOR\Service\Filter\HookServiceInterface;
 
 class WpTest implements HookServiceInterface
 {

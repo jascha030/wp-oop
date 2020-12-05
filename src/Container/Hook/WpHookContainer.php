@@ -6,8 +6,9 @@ namespace Jascha030\WP\OOPOR\Container\Hook;
 
 use Jascha030\WP\OOPOR\Container\Psr11\Psr11Container;
 use Jascha030\WP\OOPOR\Container\Psr11\WpPluginApiContainerInterface;
-use Jascha030\WP\OOPOR\Service\Hook\FilterManagerService;
-use Jascha030\WP\OOPOR\Service\Hook\HookServiceInterface;
+use Jascha030\WP\OOPOR\Exception\InvalidClassLiteralArgumentException;
+use Jascha030\WP\OOPOR\Service\Filter\Manager\FilterManagerService;
+use Jascha030\WP\OOPOR\Service\Filter\HookServiceInterface;
 
 use function add_action;
 use function add_filter;
@@ -31,10 +32,9 @@ final class WpHookContainer extends Psr11Container implements WpPluginApiContain
      * Registers a service that provides methods for Wordpress hooks.
      * Wraps hookable methods in closures which share one instance of that is only constructed upon first hook call.
      *
-     * @param string $serviceClass
-     * @param \Jascha030\WP\OOPOR\Service\Hook\HookServiceInterface|null $object to add if already constructed
-     *
-     * @throws \Jascha030\WP\OOPOR\Exception\InvalidClassLiteralArgumentException
+     * @param  string  $serviceClass
+     * @param  HookServiceInterface|null  $object  to add if already constructed
+     * @throws InvalidClassLiteralArgumentException
      */
     public function registerHookService(string $serviceClass, HookServiceInterface $object = null): void
     {

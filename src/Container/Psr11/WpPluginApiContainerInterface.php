@@ -2,7 +2,7 @@
 
 namespace Jascha030\WP\OOPOR\Container\Psr11;
 
-use Jascha030\WP\OOPOR\Service\Hook\HookServiceInterface;
+use Jascha030\WP\OOPOR\Service\Filter\HookServiceInterface;
 use Psr\Container\ContainerInterface;
 
 /**

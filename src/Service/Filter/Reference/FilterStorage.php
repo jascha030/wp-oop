@@ -1,6 +1,6 @@
 <?php
 
-namespace Jascha030\WP\OOPOR\Service\Hook\Reference;
+namespace Jascha030\WP\OOPOR\Service\Filter\Reference;
 
 final class FilterStorage
 {
