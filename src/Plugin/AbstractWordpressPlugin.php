@@ -3,15 +3,17 @@
 namespace Jascha030\WP\OOPOR\Plugin;
 
 use Jascha030\WP\OOPOR\Container\Hook\WpHookContainer;
-use Jascha030\WP\OOPOR\Exception\InvalidClassLiteralArgumentException;
 
 abstract class AbstractWordpressPlugin
 {
     protected string $file;
 
-    private array $pluginData = [];
-
     private static AbstractWordpressPlugin $instance;
+
+    /**
+     * @var WpHookContainer
+     */
+    protected WpHookContainer $container;
 
     public static function getInstance()
     {
@@ -20,18 +22,19 @@ abstract class AbstractWordpressPlugin
         }
     }
 
-    public function __construct(string $file, array $bindings = [])
+    public function __construct(string $file, array $hookableClasses = [])
     {
         $this->file = $file;
 
         $this->container = new WpHookContainer();
 
+        $this->bindClasses($hookableClasses);
+    }
+
+    protected function bindClasses(array $bindings): void
+    {
         foreach ($bindings as $class) {
-            try {
-                $this->container->registerHookService($class);
-            } catch (InvalidClassLiteralArgumentException $e) {
-                // print notices
-            }
+            $this->container->registerHookService($class);
         }
     }
 }

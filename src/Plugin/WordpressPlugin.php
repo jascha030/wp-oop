@@ -1,6 +1,5 @@
 <?php
 
-
 namespace Jascha030\WP\OOPOR\Plugin;
 
 use Jascha030\WP\OOPOR\Plugin\Notice\AdminNotice;
