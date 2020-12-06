@@ -115,6 +115,7 @@ class FilterService
      * @param  string  $tag
      * @param  string|array  $arguments
      * @param  int|null  $context
+     * @noinspection MissingParameterTypeDeclarationInspection
      */
     private function sanitizeAndAdd(string $service, string $tag, $arguments, int $context = null): void
     {

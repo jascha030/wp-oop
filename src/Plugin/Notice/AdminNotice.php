@@ -1,8 +1,6 @@
 <?php
 
-
 namespace Jascha030\WP\OOP\Plugin\Notice;
-
 
 use Exception;
 
@@ -54,7 +52,7 @@ class AdminNotice
         }
     }
 
-    final public function toException()
+    final public function toException(): Exception
     {
         return new Exception(esc_html($this->message));
     }

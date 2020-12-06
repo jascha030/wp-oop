@@ -1,8 +1,6 @@
 <?php
 
-
 namespace Jascha030\WP\OOP\Plugin;
-
 
 use Jascha030\WP\OOP\Plugin\Notice\AdminNotice;
 
@@ -20,9 +18,18 @@ trait DisplaysAdminNotices
      * @param  int  $type
      * @param  bool  $dismissible
      */
-    public function setNotice(string $message, int $type = AdminNotice::INFO, bool $dismissible = true)
-    {
+    final public function createAndAddNotice(
+        string $message,
+        int $type = AdminNotice::INFO,
+        bool $dismissible = true
+    ): void {
         $this->notices[] = new AdminNotice($message, $type);
+    }
+
+
+    public function addNotice(AdminNotice $notice): void
+    {
+        $this->notices[] = $notice;
     }
 
     /**

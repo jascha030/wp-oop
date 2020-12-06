@@ -1,6 +1,6 @@
 {
   "name": "jascha030/wp-oop",
-  "description": "WP OOP On Roids (working title)",
+  "description": "Small library of classes I use for OOP Wordpress development",
   "license": "MIT",
   "authors": [
     {

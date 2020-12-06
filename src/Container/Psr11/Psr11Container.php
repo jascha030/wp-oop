@@ -1,4 +1,8 @@
-<?php
+<?php /** @noinspection ALL */
+
+/** @noinspection ALL */
+
+/** @noinspection ALL */
 
 declare(strict_types=1);
 

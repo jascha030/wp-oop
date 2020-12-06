@@ -1,8 +1,6 @@
 <?php
 
-
 namespace Jascha030\WP\OOP\Plugin\Notice;
-
 
 final class ErrorNotice extends AdminNotice
 {

@@ -1,4 +1,4 @@
-<?php
+<?php /** @noinspection MissingParameterTypeDeclarationInspection */
 
 namespace Jascha030\WP\OOP\Container\Psr11;
 

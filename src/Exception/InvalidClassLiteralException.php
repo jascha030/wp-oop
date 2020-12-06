@@ -50,7 +50,7 @@ class InvalidClassLiteralException extends Exception implements ContainerExcepti
         $append  = 'interface.';
 
         if ($implements && $multiple) {
-            $append = $multiple ? 'interface: %s.' : 'one of the following interfaces: %s.';
+            $append = 'interface: %s.';
             $append = sprintf($append, $implements);
         }
 

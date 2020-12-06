@@ -1,6 +1,5 @@
 <?php
 
-
 namespace Jascha030\WP\OOP\Plugin;
 
 /**
