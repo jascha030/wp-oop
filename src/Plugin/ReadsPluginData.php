@@ -1,13 +1,13 @@
 <?php
 
 
-namespace Jascha030\WP\OOPOR\Plugin;
+namespace Jascha030\WP\OOP\Plugin;
 
 /**
  * Trait ReadsPluginData
  * Methods for reading data from the header in the main plugin file.
  *
- * @package Jascha030\WP\OOPOR\Plugin
+ * @package Jascha030\WP\OOP\Plugin
  */
 trait ReadsPluginData
 {

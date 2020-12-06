@@ -2,12 +2,12 @@
 
 declare(strict_types=1);
 
-namespace Jascha030\WP\OOPOR\Service\Filter\Reference;
+namespace Jascha030\WP\OOP\Service\Filter\Reference;
 
 use Closure;
 use Exception;
 use InvalidArgumentException;
-use Jascha030\WP\OOPOR\Service\Filter\Manager\FilterService;
+use Jascha030\WP\OOP\Service\Filter\Manager\FilterService;
 use Symfony\Component\Uid\Uuid;
 
 use function add_action;

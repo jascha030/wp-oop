@@ -1,10 +1,10 @@
 <?php
 
 
-namespace Jascha030\WP\OOPOR\Plugin;
+namespace Jascha030\WP\OOP\Plugin;
 
 
-use Jascha030\WP\OOPOR\Plugin\Notice\AdminNotice;
+use Jascha030\WP\OOP\Plugin\Notice\AdminNotice;
 
 trait DisplaysAdminNotices
 {

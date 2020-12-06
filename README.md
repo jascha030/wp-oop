@@ -42,8 +42,8 @@ The code below is an example of how a main plugin file utilises this package. An
 
 namespace Jascha030\Test;
 
-use Jascha030\WP\OOPOR\Container\Hook\WpHookContainer;
-use Jascha030\WP\OOPOR\Exception\InvalidClassLiteralArgumentException;
+use Jascha030\WP\OOP\Container\Hook\WpHookContainer;
+use Jascha030\WP\OOP\Exception\InvalidClassLiteralArgumentException;
 
 /**
  * Require composer PSR-4 autoloader
@@ -92,7 +92,7 @@ function testContainer()
     foreach (WP_OOP_HOOK_SERVICES as $hookableClass) {
         try {
             // Hook class to the container which will construct the class upon first call by a wordpress hook.
-            (getContainer())->registerHookService($hookableClass);
+            (getContainer())->registerHookable($hookableClass);
         } catch (InvalidClassLiteralArgumentException $e) {
             var_dump($e->getMessage());
         }
@@ -131,9 +131,9 @@ Below is an example of one of these classes.
 
 namespace Jascha030\Test;
 
-use Jascha030\WP\OOPOR\Service\Filter\HookServiceInterface;
+use Jascha030\WP\OOP\Service\Filter\HookableInterface;
 
-class WpTest implements HookServiceInterface
+class WpTest implements HookableInterface
 {
     public static array $actions = [
         'index_test_area'  => 'testArea',  // most basic implementation: Hook => method

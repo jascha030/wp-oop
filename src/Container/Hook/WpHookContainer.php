@@ -2,13 +2,13 @@
 
 declare(strict_types=1);
 
-namespace Jascha030\WP\OOPOR\Container\Hook;
+namespace Jascha030\WP\OOP\Container\Hook;
 
-use Jascha030\WP\OOPOR\Container\Psr11\Psr11Container;
-use Jascha030\WP\OOPOR\Container\Psr11\WpPluginApiContainerInterface;
-use Jascha030\WP\OOPOR\Exception\InvalidClassLiteralArgumentException;
-use Jascha030\WP\OOPOR\Service\Filter\Manager\FilterService;
-use Jascha030\WP\OOPOR\Service\Filter\HookServiceInterface;
+use Jascha030\WP\OOP\Container\Psr11\Psr11Container;
+use Jascha030\WP\OOP\Container\Psr11\WpPluginApiContainerInterface;
+use Jascha030\WP\OOP\Exception\InvalidClassLiteralArgumentException;
+use Jascha030\WP\OOP\Service\Filter\Manager\FilterService;
+use Jascha030\WP\OOP\Service\Filter\HookableInterface;
 
 use function add_action;
 use function add_filter;
@@ -16,8 +16,8 @@ use function add_filter;
 /**
  * Class WpHookContainer
  *
- * @package Jascha030\WP\OOPOR\Container\Hook
- * @author Jascha van Aalst <contact@jaschavanaalst.nl>
+ * @package Jascha030\WP\OOP\Container\Hook
+ * @author Jascha030 <contact@jaschavanaalst.nl>
  */
 final class WpHookContainer extends Psr11Container implements WpPluginApiContainerInterface
 {
@@ -33,10 +33,10 @@ final class WpHookContainer extends Psr11Container implements WpPluginApiContain
      * Wraps hookable methods in closures which share one instance of that is only constructed upon first hook call.
      *
      * @param  string  $serviceClass
-     * @param  HookServiceInterface|null  $object  to add if already constructed
+     * @param  HookableInterface|null  $object  to add if already constructed
      * @throws InvalidClassLiteralArgumentException
      */
-    public function registerHookService(string $serviceClass, HookServiceInterface $object = null): void
+    public function registerHookable(string $serviceClass, HookableInterface $object = null): void
     {
         $this->get(FilterService::class)->registerHookService($serviceClass, $object);
     }

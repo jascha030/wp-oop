@@ -1,8 +1,8 @@
 <?php
 
-namespace Jascha030\WP\OOPOR\Plugin;
+namespace Jascha030\WP\OOP\Plugin;
 
-use Jascha030\WP\OOPOR\Container\Hook\WpHookContainer;
+use Jascha030\WP\OOP\Container\Hook\WpHookContainer;
 
 abstract class AbstractWordpressPlugin
 {
@@ -15,7 +15,7 @@ abstract class AbstractWordpressPlugin
      */
     protected WpHookContainer $container;
 
-    public static function getInstance()
+    public static function getInstance(): WpHookContainer
     {
         if (null === static::$instance) {
             static::$instance = new static;
@@ -34,7 +34,7 @@ abstract class AbstractWordpressPlugin
     protected function bindClasses(array $bindings): void
     {
         foreach ($bindings as $class) {
-            $this->container->registerHookService($class);
+            $this->container->registerHookable($class);
         }
     }
 }

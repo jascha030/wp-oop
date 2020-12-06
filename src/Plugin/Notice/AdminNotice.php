@@ -1,7 +1,7 @@
 <?php
 
 
-namespace Jascha030\WP\OOPOR\Plugin\Notice;
+namespace Jascha030\WP\OOP\Plugin\Notice;
 
 
 use Exception;

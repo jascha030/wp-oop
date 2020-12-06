@@ -1,19 +1,19 @@
 <?php
 
-namespace Jascha030\WP\OOPOR\Service\Filter\Manager;
+namespace Jascha030\WP\OOP\Service\Filter\Manager;
 
 use Closure;
-use Jascha030\WP\OOPOR\Container\Psr11\ContainerObjectInterface;
-use Jascha030\WP\OOPOR\Exception\InvalidClassLiteralArgumentException;
-use Jascha030\WP\OOPOR\Service\Filter\HookServiceInterface;
-use Jascha030\WP\OOPOR\Service\Filter\Reference\FilterStorage;
-use Jascha030\WP\OOPOR\Service\Filter\Reference\HookedFilter;
+use Jascha030\WP\OOP\Container\Psr11\ContainerObjectInterface;
+use Jascha030\WP\OOP\Exception\InvalidClassLiteralArgumentException;
+use Jascha030\WP\OOP\Service\Filter\HookableInterface;
+use Jascha030\WP\OOP\Service\Filter\Reference\FilterStorage;
+use Jascha030\WP\OOP\Service\Filter\Reference\HookedFilter;
 
 class FilterService
 {
     public const ACTION = 2;
-    public const FILTER = 1;
-    private const HOOK_TYPES = [
+    public const FILTER     = 1;
+    public const HOOK_TYPES = [
         self::ACTION => 'actions',
         self::FILTER => 'filters'
     ];
@@ -33,14 +33,14 @@ class FilterService
      * Wraps hookable methods in closures which share one instance of that is only constructed upon first hook call.
      *
      * @param  string  $serviceClass
-     * @param  HookServiceInterface|null  $object  to add if already constructed
+     * @param  HookableInterface|null  $object  to add if already constructed
      *
      * @throws InvalidClassLiteralArgumentException
      */
-    final public function registerHookService(string $serviceClass, HookServiceInterface $object = null): void
+    final public function registerHookService(string $serviceClass, HookableInterface $object = null): void
     {
-        if (! is_subclass_of($serviceClass, HookServiceInterface::class)) {
-            throw new InvalidClassLiteralArgumentException('class', $serviceClass, HookServiceInterface::class);
+        if (! is_subclass_of($serviceClass, HookableInterface::class)) {
+            throw new InvalidClassLiteralArgumentException('class', $serviceClass, HookableInterface::class);
         }
 
         if (! $this->container->has($serviceClass)) {
@@ -126,9 +126,9 @@ class FilterService
         // Filter or action.
         $context = $context ?? 1;
 
-        if ($this->keepReference) {
-            $this->addFilterAndReference($tag, $service, $method, $priority, $acceptedArguments, $context);
-        } else {
+//        if ($this->keepReference) {
+//            $this->addFilterAndReference($tag, $service, $method, $priority, $acceptedArguments, $context);
+//        } else {
             $this->add(
                 $tag,
                 $this->wrapClosure($service, $method),
@@ -136,7 +136,7 @@ class FilterService
                 $acceptedArguments,
                 $context
             );
-        }
+//        }
     }
 
     /**

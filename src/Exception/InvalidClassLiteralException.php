@@ -1,6 +1,6 @@
 <?php
 
-namespace Jascha030\WP\OOPOR\Exception;
+namespace Jascha030\WP\OOP\Exception;
 
 use Exception;
 use Psr\Container\ContainerExceptionInterface;
@@ -10,8 +10,8 @@ use Psr\Container\ContainerExceptionInterface;
  *
  * Throwable for Class string literal arguments that don't implement their expected interface
  *
- * @package Jascha030\WP\OOPOR\Exception
- * @author Jascha van Aalst <contact@jaschavanaalst.nl>
+ * @package Jascha030\WP\OOP\Exception
+ * @author Jascha030 <contact@jaschavanaalst.nl>
  */
 class InvalidClassLiteralException extends Exception implements ContainerExceptionInterface
 {
@@ -20,10 +20,10 @@ class InvalidClassLiteralException extends Exception implements ContainerExcepti
     /**
      * InvalidClassLiteralException constructor.
      *
-     * @param string $providedClass
-     * @param string|null $implements
-     * @param bool $multiple
-     * @param string|null $message
+     * @param  string|null  $providedClass
+     * @param  string|null  $implements
+     * @param  bool  $multiple
+     * @param  string|null  $message
      */
     public function __construct(
         string $providedClass = null,

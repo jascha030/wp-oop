@@ -1,12 +1,12 @@
 <?php
 
-namespace Jascha030\WP\OOPOR\Exception;
+namespace Jascha030\WP\OOP\Exception;
 
 /**
  * Class InvalidClassLiteralArgumentException
  *
- * @package Jascha030\WP\OOPOR\Exception
- * @author Jascha van Aalst <contact@jaschavanaalst.nl>
+ * @package Jascha030\WP\OOP\Exception
+ * @author Jascha030 <contact@jaschavanaalst.nl>
  */
 final class InvalidClassLiteralArgumentException extends InvalidClassLiteralException
 {

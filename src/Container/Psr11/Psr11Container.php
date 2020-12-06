@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace Jascha030\WP\OOPOR\Container\Psr11;
+namespace Jascha030\WP\OOP\Container\Psr11;
 
 use Pimple\Container as PimpleContainer;
 use Psr\Container\ContainerInterface;
@@ -13,8 +13,8 @@ use Psr\Container\ContainerInterface;
  * PSR-11 Compliant wrapper for Pimple Container.
  * The one pimple provides is final, this one can be extended.
  *
- * @package Jascha030\WP\OOPOR\Container\Psr11
- * @author Jascha van Aalst <contact@jaschavanaalst.nl>
+ * @package Jascha030\WP\OOP\Container\Psr11
+ * @author Jascha030 <contact@jaschavanaalst.nl>
  */
 class Psr11Container implements ContainerInterface, ContainerObjectInterface
 {
