@@ -90,6 +90,9 @@ class HookedFilter
         }
     }
 
+    /**
+     * @throws Exception
+     */
     final public function test(): void
     {
         if (! $this->hooked) {
