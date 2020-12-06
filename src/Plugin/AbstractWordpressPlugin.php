@@ -11,9 +11,11 @@ abstract class AbstractWordpressPlugin
     use DisplaysAdminNotices;
     use ReadsPluginData;
 
-    protected string $file;
-
     protected static AbstractWordpressPlugin $instance;
+
+    protected static string $requiredWordpress = '5.0';
+
+    protected string $file;
 
     /**
      * @var WpHookContainer
@@ -40,6 +42,15 @@ abstract class AbstractWordpressPlugin
         self::$instance = $this;
     }
 
+    /**
+     * @param  string  $key
+     * @return mixed
+     */
+    public function get(string $key)
+    {
+        return $this->container->get($key);
+    }
+
     protected function bindClasses(array $bindings): void
     {
         foreach ($bindings as $class) {
@@ -55,7 +66,6 @@ abstract class AbstractWordpressPlugin
     {
         return $this->file;
     }
-
     private function verifyWpVersion(): bool
     {
         return get_bloginfo('version') >= (float)static::$requiredWordpress;

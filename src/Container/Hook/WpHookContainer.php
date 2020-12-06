@@ -19,7 +19,7 @@ use function add_filter;
  * @package Jascha030\WP\OOP\Container\Hook
  * @author Jascha030 <contact@jaschavanaalst.nl>
  */
-final class WpHookContainer extends Psr11Container implements WpPluginApiContainerInterface
+class WpHookContainer extends Psr11Container implements WpPluginApiContainerInterface
 {
     public function __construct(bool $storeFilters = false)
     {
